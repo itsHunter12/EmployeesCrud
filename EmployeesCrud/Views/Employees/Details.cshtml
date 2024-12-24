@@ -1,0 +1,87 @@
+﻿@model EmployeesCrud.Models.EmployeeMaster
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1 class="text-center mt-4">Employee Details</h1>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-12">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h4 class="card-title mb-4">Employee Information</h4>
+
+                    <div class="mb-4">
+                        @if (!string.IsNullOrEmpty(Model.ProfileImage))
+                        {
+                            <img src="@Url.Content("~/Uploads/Employees/" + Model.ProfileImage)" alt="Profile Image" class="img-thumbnail rounded-circle" style="max-width: 150px;" />
+                        }
+                        else
+                        {
+                            <p class="text-muted">No photo uploaded</p>
+                        }
+                    </div>
+
+                    <dl class="row justify-content-center">
+                        <dt class="col-sm-6 text-end">Employee Code</dt>
+                        <dd class="col-sm-6 text-start">@Html.DisplayFor(model => model.EmployeeCode)</dd>
+
+                        <dt class="col-sm-6 text-end">First Name</dt>
+                        <dd class="col-sm-6 text-start">@Html.DisplayFor(model => model.FirstName)</dd>
+
+                        <dt class="col-sm-6 text-end">Last Name</dt>
+                        <dd class="col-sm-6 text-start">@Html.DisplayFor(model => model.LastName)</dd>
+
+                        <dt class="col-sm-6 text-end">Email Address</dt>
+                        <dd class="col-sm-6 text-start">@Html.DisplayFor(model => model.EmailAddress)</dd>
+
+                        <dt class="col-sm-6 text-end">Mobile Number</dt>
+                        <dd class="col-sm-6 text-start">@Html.DisplayFor(model => model.MobileNumber)</dd>
+
+                        <dt class="col-sm-6 text-end">PAN Number</dt>
+                        <dd class="col-sm-6 text-start">@Html.DisplayFor(model => model.PanNumber)</dd>
+
+                        <dt class="col-sm-6 text-end">Passport Number</dt>
+                        <dd class="col-sm-6 text-start">@Html.DisplayFor(model => model.PassportNumber)</dd>
+
+                        <dt class="col-sm-6 text-end">Gender</dt>
+                        <dd class="col-sm-6 text-start">
+                            @{
+                                string gender = Model.Gender switch
+                                {
+                                    1 => "Male",
+                                    2 => "Female",
+                                    3 => "Other",
+                                    _ => "Not Specified"
+                                };
+                                @gender
+                            }
+                        </dd>
+
+                        <dt class="col-sm-6 text-end">Date of Birth</dt>
+                        <dd class="col-sm-6 text-start">@Html.DisplayFor(model => model.DateOfBirth)</dd>
+
+                        <dt class="col-sm-6 text-end">Date of Joinee</dt>
+                        <dd class="col-sm-6 text-start">@Html.DisplayFor(model => model.DateOfJoinee)</dd>
+
+                        <dt class="col-sm-6 text-end">Country</dt>
+                        <dd class="col-sm-6 text-start">@Html.DisplayFor(model => model.Country.CountryName)</dd>
+
+                        <dt class="col-sm-6 text-end">State</dt>
+                        <dd class="col-sm-6 text-start">@Html.DisplayFor(model => model.State.StateName)</dd>
+
+                        <dt class="col-sm-6 text-end">City</dt>
+                        <dd class="col-sm-6 text-start">@Html.DisplayFor(model => model.City.CityName)</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="text-center mt-3">
+                <a asp-action="Edit" asp-route-id="@Model?.Row_Id" class="btn btn-warning">Edit</a> |
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </div>
+    </div>
+</div>

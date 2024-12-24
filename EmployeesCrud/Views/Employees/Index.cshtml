@@ -1,0 +1,147 @@
+﻿@model IEnumerable<EmployeesCrud.ViewModels.EmployeesViewModel>
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1 class="text-center mb-4">Employee List</h1>
+
+<div class="mb-3 text-end">
+    <a asp-action="Create" class="btn btn-primary">Create New Employee</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover table-bordered table-sm" id="myTable">
+        <thead class="table-dark">
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Country</th>
+                <th>State</th>
+                <th>City</th>
+                <th>Email</th>
+                <th>Mobile</th>
+                <th>PAN</th>
+                <th>Passport</th>
+                <th>Gender</th>
+                <th>DOB</th>
+                <th>Image</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in Model)
+            {
+                <tr>
+                    <td>@employee.EmployeeCode</td>
+                    <td>@employee.Name</td>
+                    <td>@employee.Country</td>
+                    <td>@employee.State</td>
+                    <td>@employee.City</td>
+                    <td>@employee.EmailAddress</td>
+                    <td>@employee.MobileNumber</td>
+                    <td>@employee.PanNumber</td>
+                    <td>@employee.PassportNumber</td>
+                    <td>@(employee.Gender == 1 ? "Male" : (employee.Gender == 2 ? "Female" : (employee.Gender == 3 ? "Other" : "Unspecified")))</td>
+                    <td>@employee.DateOfBirth.ToShortDateString()</td>
+                    <td class="text-center">
+                        <img src="@Url.Content("~/Uploads/Employees/"  + employee.ProfileImage)" alt="Profile" class="rounded" style="width: 50px; height: 50px;" />
+                    </td>
+                     <td class="text-center">
+                        <a href="@Url.Action("Edit", "Employees", new { id = employee.Row_Id})" class="btn btn-warning btn-sm me-1">Edit</a>
+                        <a href="@Url.Action("Details", "Employees", new { id = employee.Row_Id})" class="btn btn-info btn-sm me-1">Details</a>                      
+                        @* <a href="@Url.Action("Delete", "Employees", new { id = employee.Row_Id})" class="btn btn-danger btn-sm me-1">Delete</a> *@
+                        <button class="btn btn-danger btn-sm delete-btn" data-id="@employee.Row_Id" data-name="@employee.FirstName">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong id="employeeName"></strong>?</p>
+            </div>
+            <div class="modal-footer">
+                @Html.AntiForgeryToken()
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" name="__RequestVerificationToken" id="csrfToken" value="@Antiforgery.GetAndStoreTokens(ViewContext.HttpContext).RequestToken" />
+@section Scripts {
+<script>
+        $(document).ready(function () {
+                let table = new DataTable('#myTable');
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let deleteModal = new bootstrap.Modal(document.getElementById("deleteModal"));
+            let deleteBtn = document.getElementById("confirmDeleteBtn");
+            let employeeIdToDelete = null;
+
+            // Attach click event to all delete buttons
+            document.querySelectorAll(".delete-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    employeeIdToDelete = this.getAttribute("data-id");
+                    debugger;
+                    console.log("id", employeeIdToDelete);
+                    document.getElementById("employeeName").textContent = this.getAttribute("data-name");
+                    deleteModal.show();
+                });
+            });
+
+            // Confirm delete button action
+            deleteBtn.addEventListener("click", function () {
+                if(employeeIdToDelete)
+                {
+                 deleteModal.hide();
+                const csrfToken = $("#csrfToken").val();
+                $.ajax({
+                url: '/Employees/DeleteConfirmed/'+employeeIdToDelete,
+                type: "DELETE",
+                headers: {
+                    "RequestVerificationToken": csrfToken, // Add CSRF token in the headers
+                },
+                success: function (response) {
+                    
+                    // Show SweetAlert2 toast for successful deletion
+                        Swal.fire({
+                            icon: "success",
+                            title: "Employee Deleted",
+                            text: "The employee record has been successfully deleted.",
+                            toast: true,
+                            position: "top-end",
+                            showConfirmButton: false,
+                            timer: 2000,
+                        });
+                        // Optional: Reload the page or remove the deleted record from the DOM
+                    // Optional: Reload the page or remove the deleted record from the DOM
+                        setTimeout(() => {
+                            location.reload();
+                        }, 3000);
+                    },
+                error: function (xhr, status, error) {
+                    console.error("Error:", xhr.responseText);
+                    alert("An error occurred while deleting the employee.");
+                },
+            });     
+            }
+             });
+        });
+</script>
+
+}

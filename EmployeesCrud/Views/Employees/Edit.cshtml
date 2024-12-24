@@ -1,0 +1,287 @@
+﻿@model EmployeesCrud.Models.EmployeeMaster
+
+@{
+    ViewData["Title"] = "Edit Employee";
+}
+
+<h1 class="text-center mb-4">Edit Employee</h1>
+
+<div class="container p-4 border rounded bg-light" style="max-width: 600px;">
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Row_Id" />
+
+        <!-- Profile Picture Display -->
+        <div class="text-center mb-4">
+            @if (!string.IsNullOrEmpty(Model.ProfileImage))
+            {
+                <img src="@Url.Content("~/Uploads/Employees/" + Model.ProfileImage)" alt="Profile Image" class="img-thumbnail rounded-circle" style="max-width: 150px;" />
+            }
+            else
+            {
+                <p class="text-muted">No photo uploaded</p>
+            }
+
+            <div class="mt-3">
+                <label for="ProfileImage" class="form-label">Change Profile Picture</label>
+                <input asp-for="UploadedFile" type="file" class="form-control w-75 mx-auto" />
+                <span asp-validation-for="UploadedFile" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- Form Fields -->
+        <div class="row g-3">
+            <!-- First Name -->
+            <div class="col-12">
+                <label for="FirstName" class="form-label">First Name</label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+
+            <!-- Last Name -->
+            <div class="col-12">
+                <label for="LastName" class="form-label">Last Name</label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+
+            <!-- Date of Birth -->
+            <div class="col-12">
+                <label for="DateOfBirth" class="form-label">Date of Birth</label>
+                <input asp-for="DateOfBirth" type="date" class="form-control" />
+                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+            </div>
+
+            <!-- Date of Joining -->
+            <div class="col-12">
+                <label for="DateOfJoinee" class="form-label">Date of Joining</label>
+                <input asp-for="DateOfJoinee" type="date" class="form-control" />
+                <span asp-validation-for="DateOfJoinee" class="text-danger"></span>
+            </div>
+
+            <!-- Country -->
+            <div class="col-12">
+                <label for="CountryId" class="form-label">Country</label>
+                <select asp-for="CountryId" class="form-select">
+                    <option value="">Select Country</option>
+                    @if (ViewBag.CountryId != null)
+                    {
+                        @foreach (var country in ViewBag.CountryId as List<SelectListItem>)
+                        {
+                            <option value="@country.Value">@country.Text</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="CountryId" class="text-danger"></span>
+            </div>
+
+            <!-- State -->
+            <div class="col-12">
+                <label for="StateId" class="form-label">State</label>
+                <select asp-for="StateId" class="form-select">
+                    <option value="">Select State</option>
+                    @if (ViewBag.StateId != null)
+                    {
+                        @foreach (var state in ViewBag.StateId as List<SelectListItem>)
+                        {
+                            <option value="@state.Value">@state.Text</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="StateId" class="text-danger"></span>
+            </div>
+
+            <!-- City -->
+            <div class="col-12">
+                <label for="CityId" class="form-label">City</label>
+                <select asp-for="CityId" class="form-select">
+                    <option value="">Select City</option>
+                    @if (ViewBag.CityId != null)
+                    {
+                        @foreach (var city in ViewBag.CityId as List<SelectListItem>)
+                        {
+                            <option value="@city.Value">@city.Text</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="CityId" class="text-danger"></span>
+            </div>
+
+            <!-- Email Address -->
+            <div class="col-12">
+                <label for="EmailAddress" class="form-label">Email Address</label>
+                <input asp-for="EmailAddress" type="email" class="form-control" />
+                <span asp-validation-for="EmailAddress" class="text-danger"></span>
+            </div>
+
+            <!-- Mobile Number -->
+            <div class="col-12">
+                <label for="MobileNumber" class="form-label">Mobile Number</label>
+                <input asp-for="MobileNumber" type="tel" class="form-control" />
+                <span asp-validation-for="MobileNumber" class="text-danger"></span>
+            </div>
+
+            <!-- PAN Number -->
+            <div class="col-12">
+                <label for="PanNumber" class="form-label">PAN Number</label>
+                <input asp-for="PanNumber" class="form-control" />
+                <span asp-validation-for="PanNumber" class="text-danger"></span>
+            </div>
+
+            <!-- Passport Number -->
+            <div class="col-12">
+                <label for="PassportNumber" class="form-label">Passport Number</label>
+                <input asp-for="PassportNumber" class="form-control" />
+                <span asp-validation-for="PassportNumber" class="text-danger"></span>
+            </div>
+
+            <!-- Gender -->
+            <div class="col-12">
+                <label for="Gender" class="form-label">Gender</label>
+                <select asp-for="Gender" class="form-select">
+                    <option value="1">Male</option>
+                    <option value="2">Female</option>
+                    <option value="3">Other</option>
+                </select>
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Event handler for Country dropdown change
+            $('#CountryId').change(function (event) {
+                event.preventDefault(); // Prevent page reload or form submission
+                const countryId = $(this).val();
+
+                // Clear State and City dropdowns
+                $('#StateId').empty().append('<option value="">--Select--</option>');
+                $('#CityId').empty().append('<option value="">--Select--</option>');
+
+                if (countryId) {
+                    populateStates(countryId, null); // Fetch and populate states
+                }
+            });
+
+            // Event handler for State dropdown change
+            $('#StateId').change(function (event) {
+                event.preventDefault(); // Prevent page reload or form submission
+                const stateId = $(this).val();
+
+                // Clear City dropdown
+                $('#CityId').empty().append('<option value="">--Select--</option>');
+
+                if (stateId) {
+                    populateCities(stateId, null); // Fetch and populate cities
+                }
+            });
+
+            // Function to populate states
+            function populateStates(countryId, selectedStateId) {
+                $.ajax({
+                    url: '/Employees/GetState?countryId=' + countryId, // Replace with your API endpoint
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        const dropdown = $('#StateId');
+                        dropdown.empty().append('<option value="">--Select--</option>');
+
+                        data.forEach(function (item) {
+                            dropdown.append(
+                                `<option value="${item.row_Id}" ${
+                                    item.row_Id == selectedStateId ? 'selected' : ''
+                                }>${item.stateName}</option>`
+                            );
+                        });
+
+                        if (selectedStateId) {
+                            $('#StateId').val(selectedStateId).change(); // Trigger change to populate cities
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                    },
+                });
+            }
+
+            // Function to populate cities
+            function populateCities(stateId, selectedCityId) {
+                $.ajax({
+                    
+                    url: '/Employees/GetCity?stateId=' + stateId, // Replace with your API endpoint
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        const dropdown = $('#CityId');
+                        debugger;
+                        console.log("City2", selectedCityId);
+                        dropdown.empty().append('<option value="">--Select--</option>');
+
+                        data.forEach(function (item) {
+                            dropdown.append(
+                                `<option value="${item.row_Id}" ${
+                                    item.row_Id == selectedCityId ? 'selected' : ''
+                                }>${item.cityName}</option>`
+                            );
+                        });
+
+                        if (selectedCityId) {
+                            debugger;
+                            console.log("City3", selectedCityId);
+                            $('#CityId').val(selectedCityId); // Preselect the city
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                    },
+                });
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+                const dobInput = document.getElementById("DateOfBirth");
+                const dojInput = document.getElementById("DateOfJoinee");
+
+                const dobErrorSpan = $("span[data-valmsg-for='DateOfBirth']");  // Error message for Date of Birth
+                const dojErrorSpan = $("span[data-valmsg-for='DateOfJoinee']"); // Error message for Date of Joinee
+
+                // Get today's date and subtract 1 day for the max date (yesterday)
+                const today = new Date();
+                const yesterday = new Date(today);
+                yesterday.setDate(today.getDate() - 1); // Subtract 1 day from today
+                const yesterdayString = yesterday.toISOString().split("T")[0];  // Format date as YYYY-MM-DD
+
+                // Set max date for both fields to yesterday
+                if (dobInput) {
+                    dobInput.setAttribute("max", yesterdayString);  // Prevent today's date or future dates
+                    dobInput.addEventListener("blur", function () {
+                        if (dobInput.value >= yesterdayString) {
+                            dobErrorSpan.text("Date of Birth cannot be today or in the future.");
+                        } else {
+                            dobErrorSpan.text(""); // Clear error if valid
+                        }
+                    });
+                }
+
+                if (dojInput) {
+                    dojInput.setAttribute("max", yesterdayString);  // Prevent today's date or future dates
+                    dojInput.addEventListener("blur", function () {
+                        if (dojInput.value >= yesterdayString) {
+                            dojErrorSpan.text("Date of Joinee cannot be today or in the future.");
+                        } else {
+                            dojErrorSpan.text(""); // Clear error if valid
+                        }
+                    });
+                }
+            });
+
+    </script>
+}

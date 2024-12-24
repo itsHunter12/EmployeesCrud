@@ -1,0 +1,467 @@
+﻿@model EmployeesCrud.Models.EmployeeMaster
+
+@{
+    ViewData["Title"] = "Create";
+    var creationMessage = TempData["EmployeeCreated"] as string;
+    var errorMessage = TempData["ErrorMessage"] as string;
+}
+
+<h1 class="text-center mt-4">Create Employee</h1>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10 col-sm-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title text-center mb-4">Employee Details</h4>
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row mb-3">
+                            <label asp-for="FirstName" class="col-md-4 col-form-label">First Name</label>
+                            <div class="col-md-8">
+                                <input asp-for="FirstName" class="form-control" />
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label asp-for="LastName" class="col-md-4 col-form-label">Last Name</label>
+                            <div class="col-md-8">
+                                <input asp-for="LastName" class="form-control" />
+                                <span asp-validation-for="LastName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label asp-for="CountryId" class="col-md-4 col-form-label">Country</label>
+                            <div class="col-md-8">
+                                <select asp-for="CountryId" id="CountryId" onchange="OnCountryChange(this.value)" name="CountryId" class="form-select">
+                                    <option value="">Select Country</option> 
+                                    @if (ViewBag.CountryId != null)
+                                    {
+                                        @foreach (var country in ViewBag.CountryId as List<SelectListItem>)
+                                        {
+                                            <option value="@country.Value">@country.Text</option>
+                                        }
+                                    }
+                                </select>
+
+                                <span asp-validation-for="CountryId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label asp-for="StateId" class="col-md-4 col-form-label">State</label>
+                            <div class="col-md-8">
+                                <select asp-for="StateId" id="StateId" onchange="OnStateChange(this.value)" name="StateId" class="form-select" asp-items=" ViewBag.StateId">
+                                    @if (ViewBag.StateId != null)
+                                    {
+                                        @foreach (var state in ViewBag.StateId as List<SelectListItem>)
+                                        {
+                                            <option value="@state.Value">@state.Text</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="StateId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label asp-for="CityId" class="col-md-4 col-form-label">City</label>
+                            <div class="col-md-8">
+                                <select asp-for="CityId" id="CityId" name="CityId" class="form-select" asp-items="ViewBag.CityId">
+                                    @if (ViewBag.CityId != null)
+                                    {
+                                        @foreach (var city in ViewBag.CityId as List<SelectListItem>)
+                                        {
+                                            <option value="@city.Value">@city.Text</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="CityId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label asp-for="EmailAddress" class="col-md-4 col-form-label">Email Address</label>
+                            <div class="col-md-8">
+                                <input asp-for="EmailAddress" type="email" class="form-control" id="EmailAddress" />
+                                <span asp-validation-for="EmailAddress" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label asp-for="MobileNumber" class="col-md-4 col-form-label">Mobile Number</label>
+                            <div class="col-md-8">
+                                <input asp-for="MobileNumber" class="form-control" id="MobileNumber" />
+                                <span asp-validation-for="MobileNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label asp-for="PanNumber" class="col-md-4 col-form-label">PAN Number</label>
+                            <div class="col-md-8">
+                                <input asp-for="PanNumber" class="form-control" id="PanNumber" />
+                                <span asp-validation-for="PanNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label asp-for="PassportNumber" class="col-md-4 col-form-label">Passport Number</label>
+                            <div class="col-md-8">
+                                <input asp-for="PassportNumber" class="form-control" id="PassportNumber" />
+                                <span asp-validation-for="PassportNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label asp-for="ProfileImage" class="col-md-4 col-form-label">Profile Image</label>
+                            <div class="col-md-8">
+                                <input asp-for="UploadedFile" type="file" class="form-control" />
+                                <span asp-validation-for="UploadedFile" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label asp-for="Gender" class="col-md-4 col-form-label">Gender</label>
+                            <div class="col-md-8">
+                                <select asp-for="Gender" class="form-select">
+                                    <option value="1">Male</option>
+                                    <option value="2">Female</option>
+                                    <option value="3">Other</option>
+                                </select>
+                                <span asp-validation-for="Gender" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label asp-for="DateOfBirth" class="col-md-4 col-form-label">Date of Birth</label>
+                            <div class="col-md-8">
+                                <input asp-for="DateOfBirth" type="date" class="form-control" id="DateOfBirth" />
+                                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label asp-for="DateOfJoinee" class="col-md-4 col-form-label">Date of Joinee</label>
+                            <div class="col-md-8">
+                                <input asp-for="DateOfJoinee" type="date" class="form-control" id="DateOfJoinee" />
+                                <span asp-validation-for="DateOfJoinee" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 form-check">
+                            <div class="col-md-4"></div>
+                            <div class="col-md-8">
+                                <input class="form-check-input" asp-for="IsActive" checked />
+                                <label class="form-check-label" asp-for="IsActive">Active</label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary">Create</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial");
+}
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Attach blur event to all input/select fields
+        const inputs = document.querySelectorAll("input, select, textarea");
+        inputs.forEach(input => {
+            input.addEventListener("blur", function () {
+                // Remove validation error for the current field
+                const fieldName = input.getAttribute("name");
+                if (fieldName) {
+                    const errorSpan = document.querySelector(`[data-valmsg-for='${fieldName}']`);
+                    if (errorSpan) {
+                        errorSpan.textContent = ""; // Clear error message
+                    }
+                }
+            });
+        });
+    });
+
+    function OnCountryChange(countryid) {
+        countryid = $('#CountryId').val();
+
+        $.ajax({
+            url: 'GetState?countryId=' + countryid, // Replace with your API endpoint
+            type: 'GET',
+            dataType: 'json', // Expected data format
+            success: function (data) {
+                // Handle the successful response
+                console.log(data);
+                const dropdown = $('#StateId');
+
+                // Clear existing options (optional)
+                dropdown.empty();
+                dropdown.append('<option value="">--Select--</option>');
+
+                // Bind response data to dropdown
+                data.forEach(function (item) {
+                    dropdown.append(
+                        `<option value="${item.row_Id}">${item.stateName}</option>` // Adjust `id` and `name` based on your API response
+                    );
+                });
+            },
+            error: function (xhr, status, error) {
+                // Handle errors
+                console.error('Error:', error);
+                $('#response').html(`<p style="color: red;">Error: ${error}</p>`);
+            }
+        });
+    }
+
+    function OnStateChange(stateId) {
+        $.ajax({
+            url: 'GetCity?stateId=' + stateId, // Replace with your API endpoint
+            type: 'GET',
+            dataType: 'json', // Expected data format
+            success: function (data) {
+                // Handle the successful response
+                console.log(data);
+                const dropdown = $('#CityId');
+
+                // Clear existing options (optional)
+                dropdown.empty();
+                dropdown.append('<option value="">--Select--</option>');
+
+                // Bind response data to dropdown
+                data.forEach(function (item) {
+                    dropdown.append(
+                        `<option value="${item.row_Id}">${item.cityName}</option>` // Adjust `id` and `name` based on your API response
+                    );
+                });
+            },
+            error: function (xhr, status, error) {
+                // Handle errors
+                console.error('Error:', error);
+                $('#response').html(`<p style="color: red;">Error: ${error}</p>`);
+            }
+        });
+    }
+
+    // Ensure input is always uppercase as the user types
+    document.addEventListener("DOMContentLoaded", function () {
+        const panInput = document.getElementById("PanNumber");
+        const passportInput = document.getElementById("PassportNumber");
+
+        if (panInput) {
+            panInput.addEventListener("input", function () {
+                panInput.value = panInput.value.toUpperCase();
+            });
+        }
+
+        if (passportInput) {
+            passportInput.addEventListener("input", function () {
+                passportInput.value = passportInput.value.toUpperCase();
+            });
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const panInput = document.getElementById("PanNumber");
+        const passportInput = document.getElementById("PassportNumber");
+
+        // Check uniqueness for PAN Number on blur
+        if (panInput) {
+            panInput.addEventListener("blur", function () {
+                const panNumber = panInput.value;
+                if (panNumber) {
+                    $.ajax({
+                        url: '/Employees/CheckPanNumberUniqueness',
+                        type: 'POST',
+                        data: { panNumber: panNumber },
+                        success: function (isUnique) {
+                            if (!isUnique) {
+                                // Display error message if not unique
+                                $("span[data-valmsg-for='PanNumber']").text("PAN Number already exists.");
+                            } else {
+                                $("span[data-valmsg-for='PanNumber']").text(""); // Clear error if unique
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        // Check uniqueness for Passport Number on blur
+        if (passportInput) {
+            passportInput.addEventListener("blur", function () {
+                const passportNumber = passportInput.value;
+                if (passportNumber) {
+                    $.ajax({
+                        url: '/Employees/CheckPassportNumberUniqueness',
+                        type: 'POST',
+                        data: { passportNumber: passportNumber },
+                        success: function (isUnique) {
+                            if (!isUnique) {
+                                // Display error message if not unique
+                                $("span[data-valmsg-for='PassportNumber']").text("Passport Number already exists.");
+                            } else {
+                                $("span[data-valmsg-for='PassportNumber']").text(""); // Clear error if unique
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const emailInput = document.getElementById("EmailAddress");
+        const mobileInput = document.getElementById("MobileNumber");
+
+        // Check uniqueness for Email Address on blur
+        if (emailInput) {
+            emailInput.addEventListener("blur", function () {
+                const emailAddress = emailInput.value;
+                if (emailAddress) {
+                    $.ajax({
+                        url: '/Employees/CheckEmailAddressUniqueness',
+                        type: 'POST',
+                        data: { emailAddress: emailAddress },
+                        success: function (isUnique) {
+                            if (!isUnique) {
+                                // Display error message if not unique
+                                $("span[data-valmsg-for='EmailAddress']").text("Email Address already exists.");
+                            } else {
+                                $("span[data-valmsg-for='EmailAddress']").text(""); // Clear error if unique
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        // Check uniqueness for Mobile Number on blur
+        if (mobileInput) {
+            mobileInput.addEventListener("blur", function () {
+                const mobileNumber = mobileInput.value;
+                if (mobileNumber) {
+                    $.ajax({
+                        url: '/Employees/CheckMobileNumberUniqueness',
+                        type: 'POST',
+                        data: { mobileNumber: mobileNumber },
+                        success: function (isUnique) {
+                            if (!isUnique) {
+                                // Display error message if not unique
+                                $("span[data-valmsg-for='MobileNumber']").text("Mobile Number already exists.");
+                            } else {
+                                $("span[data-valmsg-for='MobileNumber']").text(""); // Clear error if unique
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    });
+     
+    document.addEventListener("DOMContentLoaded", function () {
+        const emailInput = document.getElementById("EmailAddress");
+        const mobileInput = document.getElementById("MobileNumber");
+        const emailErrorSpan = $("span[data-valmsg-for='EmailAddress']");
+        const mobileErrorSpan = $("span[data-valmsg-for='MobileNumber']");
+
+
+        // Ensure Email Address is always in lowercase as the user types
+        if (emailInput) {
+            emailInput.addEventListener("input", function () {
+                emailInput.value = emailInput.value.toLowerCase();
+            });
+
+             // Validate Email on input using regex
+            emailInput.addEventListener("blur", function () {
+                const emailRegex = /^[a-zA-Z0-9._%+-]+[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                const emailValue = emailInput.value;
+                
+                if (!emailRegex.test(emailValue)) {
+                    // Display error if email is invalid
+                    emailErrorSpan.text("Please enter a valid email address.");
+                } else {
+                    emailErrorSpan.text("");  // Clear error message if email is valid
+                }
+            });
+        }
+
+        // Enforce Mobile Number to accept only digits
+        if (mobileInput) {
+            debugger;
+            mobileInput.addEventListener("input", function () {
+                // Allow only numbers in the mobile input
+                mobileInput.value = mobileInput.value.replace(/[^0-9]/g, '');
+            });
+
+            // Optionally, validate Mobile Number on blur if needed
+            mobileInput.addEventListener("blur", function () {
+                const mobileValue = mobileInput.value;
+                if (!mobileValue) {
+                mobileErrorSpan.text("Mobile number is required.");
+            } else if (!/^\d+$/.test(mobileValue)) {
+                mobileErrorSpan.text("Mobile number must contain only digits.");
+            } else if (mobileValue.length < 10) {
+                mobileErrorSpan.text("Mobile number must be at least 10 digits.");
+            } else if (mobileValue.length > 10) {
+                mobileErrorSpan.text("Mobile number must be exactly 10 digits.");
+            } else {
+                mobileErrorSpan.text(""); // Clear error if valid
+            }
+            });
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const dobInput = document.getElementById("DateOfBirth");
+        const dojInput = document.getElementById("DateOfJoinee");
+
+        const dobErrorSpan = $("span[data-valmsg-for='DateOfBirth']");  // Error message for Date of Birth
+        const dojErrorSpan = $("span[data-valmsg-for='DateOfJoinee']"); // Error message for Date of Joinee
+
+        // Get today's date and subtract 1 day for the max date (yesterday)
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1); // Subtract 1 day from today
+        const yesterdayString = yesterday.toISOString().split("T")[0];  // Format date as YYYY-MM-DD
+
+        // Set max date for both fields to yesterday
+        if (dobInput) {
+            dobInput.setAttribute("max", yesterdayString);  // Prevent today's date or future dates
+            dobInput.addEventListener("blur", function () {
+                if (dobInput.value >= yesterdayString) {
+                    dobErrorSpan.text("Date of Birth cannot be today or in the future.");
+                } else {
+                    dobErrorSpan.text(""); // Clear error if valid
+                }
+            });
+        }
+
+        if (dojInput) {
+            dojInput.setAttribute("max", yesterdayString);  // Prevent today's date or future dates
+            dojInput.addEventListener("blur", function () {
+                if (dojInput.value >= yesterdayString) {
+                    dojErrorSpan.text("Date of Joinee cannot be today or in the future.");
+                } else {
+                    dojErrorSpan.text(""); // Clear error if valid
+                }
+            });
+        }
+    });
+
+    
+
+</script>
+
