@@ -231,13 +231,8 @@ namespace EmployeesCrud.Controllers
                     if (isCreated)
                     {
                         // Set a success message in TempData
-                        TempData["EmployeeCreated"] = $"{employeeMaster.FirstName} {employeeMaster.LastName} Record has been successfully created!";
+                        TempData["SuccessMessage"] = "Record created successfully!";
                         return RedirectToAction(nameof(Index));
-                    }
-                    else 
-                    {
-                        //Set an error message if creation fails
-                        TempData["ErrorMessage"] = "Failed to create employee. Please try again.";
                     }
                 }
                

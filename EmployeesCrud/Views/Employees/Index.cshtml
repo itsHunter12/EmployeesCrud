@@ -3,6 +3,7 @@
 
 @{
     ViewData["Title"] = "Index";
+
 }
 
 <h1 class="text-center mb-4">Employee List</h1>
@@ -83,7 +84,20 @@
 </div>
 <input type="hidden" name="__RequestVerificationToken" id="csrfToken" value="@Antiforgery.GetAndStoreTokens(ViewContext.HttpContext).RequestToken" />
 @section Scripts {
-<script>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: '@TempData["SuccessMessage"]',                
+                showConfirmButton: false,
+                timer: 3000,
+            });
+        </script>
+    }
+
+    <script>
         $(document).ready(function () {
                 let table = new DataTable('#myTable');
         });
@@ -129,7 +143,6 @@
                             timer: 2000,
                         });
                         // Optional: Reload the page or remove the deleted record from the DOM
-                    // Optional: Reload the page or remove the deleted record from the DOM
                         setTimeout(() => {
                             location.reload();
                         }, 3000);
@@ -142,6 +155,8 @@
             }
              });
         });
-</script>
+
+
+    </script>
 
 }
