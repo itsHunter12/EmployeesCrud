@@ -17,7 +17,6 @@ namespace EmployeesCrud.Controllers
     public class EmployeesController : Controller
     {
 
-        private readonly ApplicationDbContext _context;
         private readonly IEmployeeRepository _employeeRepository;
         private readonly ICountryRepository _countryRepository;
         private readonly IStateRepository _stateRepository;
@@ -25,7 +24,7 @@ namespace EmployeesCrud.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IMapper _mapper;
 
-        public EmployeesController(ApplicationDbContext context,
+        public EmployeesController(
         IEmployeeRepository employeeRepository,
         ICountryRepository countryRepository,
         IStateRepository stateRepository,
@@ -33,7 +32,6 @@ namespace EmployeesCrud.Controllers
         IWebHostEnvironment webHostEnvironment,
         IMapper mapper)
         {
-            _context = context;
             _employeeRepository = employeeRepository;
             _countryRepository = countryRepository;
             _stateRepository = stateRepository;
@@ -60,22 +58,18 @@ namespace EmployeesCrud.Controllers
         }
 
         // GET: Employees/Details/5
-        public IActionResult Details(int? id)
+        public IActionResult Details(int id)
         {
             try
             {
                 // Validate that the ID is provided
-                if (id == null)
+                if (id == 0)
                 {
                     return NotFound(); // Return 404 if ID is null
                 }
 
                 // Fetch employee details with related entities (City, Country, State)
-                var employeeMaster = _context.EmployeeMaster
-                    .Include(e => e.City)
-                    .Include(e => e.Country)
-                    .Include(e => e.State)
-                    .FirstOrDefault(m => m.Row_Id == id);
+                var employeeMaster = _employeeRepository.Get(id);
 
                 // Check if the employee record exists
                 if (employeeMaster == null)
@@ -99,7 +93,7 @@ namespace EmployeesCrud.Controllers
             try
             {
                 // Fetch list of countries for dropdown
-                var countries = _context.Country.Select(c => new SelectListItem
+                var countries = _countryRepository.GetAllCountries().Select(c => new SelectListItem
                 {
                     Value = c.Row_Id.ToString(),
                     Text = c.CountryName
@@ -127,26 +121,27 @@ namespace EmployeesCrud.Controllers
         {
             try
             {
+                var existingList = _employeeRepository.GetAllEmployees();
                 // Validate if PAN Number already exists
-                if (_context.EmployeeMaster.Any(e => e.PanNumber == employeeMaster.PanNumber))
+                if (existingList.Any(e => e.PanNumber == employeeMaster.PanNumber))
                 {
                     ModelState.AddModelError("PanNumber", "PAN Number already exists.");
                 }
 
                 // Validate if Passport Number already exists
-                if (_context.EmployeeMaster.Any(e => e.PassportNumber == employeeMaster.PassportNumber))
+                if (existingList.Any(e => e.PassportNumber == employeeMaster.PassportNumber))
                 {
                     ModelState.AddModelError("PassportNumber", "Passport Number already exists.");
                 }
 
                 // Check if the email address already exists
-                if (_context.EmployeeMaster.Any(e => e.EmailAddress == employeeMaster.EmailAddress))
+                if (existingList.Any(e => e.EmailAddress == employeeMaster.EmailAddress))
                 {
                     ModelState.AddModelError("EmailAddress", "Email Address already exists.");
                 }
 
                 // Check if the mobile number already exists
-                if (_context.EmployeeMaster.Any(e => e.MobileNumber == employeeMaster.MobileNumber))
+                if (existingList.Any(e => e.MobileNumber == employeeMaster.MobileNumber))
                 {
                     ModelState.AddModelError("MobileNumber", "Mobile Number already exists.");
                 }
@@ -249,19 +244,19 @@ namespace EmployeesCrud.Controllers
         }
 
         // GET: Employees/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id)
         {
             try
             {
                 // Check if the provided id is null
-                if (id == null)
+                if (id == 0)
                 {
                     // Return a "Not Found" response if no id is passed
                     return NotFound();
                 }
 
                 // Retrieve the employee record from the database based on the id
-                var employeeMaster = _context.EmployeeMaster.Find(id);
+                var employeeMaster = _employeeRepository.Get(id);
 
                 // If the employee record is not found, return a "Not Found" response
                 if (employeeMaster == null)
@@ -280,7 +275,7 @@ namespace EmployeesCrud.Controllers
                 // Return a generic error view or a bad request status if an exception occurs
                 return StatusCode(500, "Internal server error");
             }
-        }
+        }       
 
         // POST: Employees/Edit/5
         [HttpPost]
@@ -292,26 +287,27 @@ namespace EmployeesCrud.Controllers
                 return NotFound();
             }
 
+            var existingList= _employeeRepository.GetAllEmployees();
             // Exclude the current record while checking for uniqueness
-            if (_employeeRepository.GetAllEmployees().Any(e => e.PanNumber == employeeMaster.PanNumber && e.Row_Id != id))
+            if (existingList.Any(e => e.PanNumber == employeeMaster.PanNumber && e.Row_Id != id))
             {
                 ModelState.AddModelError("PanNumber", "PAN Number already exists.");
             }
 
             // Validate if Passport Number already exists
-            if (_employeeRepository.GetAllEmployees().Any(e => e.PassportNumber == employeeMaster.PassportNumber && e.Row_Id != id))
+            if (existingList.Any(e => e.PassportNumber == employeeMaster.PassportNumber && e.Row_Id != id))
             {
                 ModelState.AddModelError("PassportNumber", "Passport Number already exists.");
             }
 
             // Validate if Email already exists
-            if (_employeeRepository.GetAllEmployees().Any(e => e.EmailAddress == employeeMaster.EmailAddress && e.Row_Id != id))
+            if (existingList.Any(e => e.EmailAddress == employeeMaster.EmailAddress && e.Row_Id != id))
             {
                 ModelState.AddModelError("EmailAddress", "Email Address already exists.");
             }
 
             // Validate if Mobile Number already exists
-            if (_employeeRepository.GetAllEmployees().Any(e => e.MobileNumber == employeeMaster.MobileNumber && e.Row_Id != id))
+            if (existingList.Any(e => e.MobileNumber == employeeMaster.MobileNumber && e.Row_Id != id))
             {
                 ModelState.AddModelError("MobileNumber", "Mobile Number already exists.");
             }
@@ -339,7 +335,8 @@ namespace EmployeesCrud.Controllers
             {
                 ModelState.AddModelError("MobileNumber", "Mobile number must contain only digits.");
             }
-           
+
+            var existingEmployee = existingList.FirstOrDefault(e => e.Row_Id == employeeMaster.Row_Id);
 
             if (employeeMaster.UploadedFile != null && employeeMaster.UploadedFile.Length > 0)
             {
@@ -367,21 +364,28 @@ namespace EmployeesCrud.Controllers
                     return View(employeeMaster); // Return the view with the validation error
                 }
 
-                string filePath = Path.Combine(uploadPath, Path.GetFileName(employeeMaster.UploadedFile.FileName));
-
-                if (System.IO.File.Exists(filePath))
+                // Check if the employee already has a profile image in the database
+                if (existingEmployee != null && !string.IsNullOrEmpty(existingEmployee.ProfileImage))
                 {
-                    ModelState.AddModelError("UploadedFile", "An image with the same name already exists. Please rename the file or choose a different image.");
-                    GetDrodown(employeeMaster); // Ensure dropdowns are repopulated
-                    return View(employeeMaster); // Return view with the error
+                    string existingFilePath = Path.Combine(uploadPath, existingEmployee.ProfileImage);
+
+                    // Delete the existing file if it exists
+                    if (System.IO.File.Exists(existingFilePath))
+                    {
+                        System.IO.File.Delete(existingFilePath);
+                    }
                 }
 
-                // Save the file
+                // Generate a unique filename using GUID
+                string uniqueFileName = $"{Guid.NewGuid()}{fileExtension}";
+                string filePath = Path.Combine(uploadPath, uniqueFileName);              
+
+                // Save the new file
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     employeeMaster.UploadedFile.CopyTo(fileStream);
                 }
-                employeeMaster.ProfileImage = employeeMaster.UploadedFile.FileName;
+                employeeMaster.ProfileImage = uniqueFileName;
             }
 
             if (ModelState.IsValid)
@@ -411,10 +415,10 @@ namespace EmployeesCrud.Controllers
         }
 
         // GET: Employees/Delete/5
-        public IActionResult Delete(int? id)
+        public IActionResult Delete(int id)
         {
             // Check if the id is null, if so, return a "Not Found" result
-            if (id == null)
+            if (id == 0)
             {
                 return NotFound();
             }
@@ -422,11 +426,7 @@ namespace EmployeesCrud.Controllers
             try
             {
                 // Retrieve the employee record including related City, Country, and State data
-                var employeeMaster = _context.EmployeeMaster
-                    .Include(e => e.City)     // Include City details
-                    .Include(e => e.Country)  // Include Country details
-                    .Include(e => e.State)    // Include State details
-                    .FirstOrDefault(m => m.Row_Id == id);  // Find the employee by id
+                var employeeMaster = _employeeRepository.Get(id);  // Find the employee by id
 
                 // If the employee record is not found, return a "Not Found" result
                 if (employeeMaster == null)
@@ -454,7 +454,7 @@ namespace EmployeesCrud.Controllers
         {
             try
             {
-                var employeeMaster = _context.EmployeeMaster.Find(id);
+                var employeeMaster = _employeeRepository.Get(id);
 
                 if (employeeMaster != null)
                 {
@@ -484,7 +484,7 @@ namespace EmployeesCrud.Controllers
             try
             {
                 // Check if any employee record with the given ID exists in the database
-                return _context.EmployeeMaster.Any(e => e.Row_Id == id);
+                return _employeeRepository.GetAllEmployees().Any(e => e.Row_Id == id);
             }
             catch (Exception ex)
             {
