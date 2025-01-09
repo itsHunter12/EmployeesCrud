@@ -37,7 +37,7 @@ namespace EmployeesCrud.Models
         public string EmailAddress { get; set; }
 
         [Required(ErrorMessage = "Please enter Mobile number")]
-        [MaxLength(10)]
+        [MaxLength(15)]
         public string MobileNumber { get; set; }
 
         [Required(ErrorMessage = "Please enter PAN")]

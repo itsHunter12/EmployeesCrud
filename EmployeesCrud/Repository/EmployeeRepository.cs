@@ -47,14 +47,14 @@ namespace EmployeesCrud.Repository
             _dbContext.SaveChanges();
             return true;
         }
-
         public EmployeeMaster Get(int id)
         {
-            return _dbContext.EmployeeMaster.FirstOrDefault(d=>d.Row_Id==id);
+            return _dbContext.EmployeeMaster
+                    .Include(e => e.City)
+                    .Include(e => e.Country)
+                    .Include(e => e.State)
+                    .FirstOrDefault(m => m.Row_Id == id);
         }
-
-      
-
         public bool Update(EmployeeMaster employee)
         {
             var existingEmployee = _dbContext.EmployeeMaster.Find(employee.Row_Id);
